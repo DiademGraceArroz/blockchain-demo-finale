@@ -1,0 +1,20 @@
+{
+  "name": "blockchain-demo-finale",
+  "version": "1.0.0",
+  "description": "Complete blockchain demo with mining, rewards, tamper detection, and fork resolution",
+  "main": "dist/main.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "npm run build && node dist/main.js",
+    "dev": "ts-node src/main.ts",
+    "clean": "rm -rf dist"
+  },
+  "keywords": ["blockchain", "typescript", "mining", "proof-of-work"],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "ts-node": "^10.9.0",
+    "typescript": "^5.0.0"
+  }
+}
