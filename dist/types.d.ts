@@ -15,6 +15,7 @@ export interface MiningResult {
     hash: string;
     miningTime: number;
     miner: string;
+    timestamp: number;
 }
 export interface ValidationResult {
     valid: boolean;

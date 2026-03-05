@@ -26,32 +26,25 @@ class Miner {
     /**
      * Attempts to mine a block
      * Searches nonces: start, start+step, start+2*step, ...
-     * Returns when valid hash found or max iterations reached
+     * Uses Block.calculateHash() for consistent hash computation
      */
     attemptMine(index, data, previousHash, difficulty, maxIterations = 1000000) {
         const target = '0'.repeat(difficulty);
         let nonce = this.nonceStart;
         const startTime = Date.now();
         for (let i = 0; i < maxIterations; i++) {
-            // Create block with current nonce
-            const timestamp = Date.now();
-            const blockData = JSON.stringify(data);
-            const blockString = index + timestamp + blockData + previousHash + nonce;
-            const { createHash } = require('crypto');
-            const hash = createHash('sha256').update(blockString).digest('hex');
-            // Check if hash is valid
-            if (hash.substring(0, difficulty) === target) {
+            // Create block with current nonce - Block constructor calculates hash
+            const block = new Block_1.Block(index, data, previousHash, nonce);
+            // Check if hash meets difficulty target
+            if (block.hash.substring(0, difficulty) === target) {
                 const endTime = Date.now();
-                // Create the actual block
-                const block = new Block_1.Block(index, data, previousHash, nonce);
-                block.timestamp = timestamp;
-                block.hash = hash;
                 return {
                     success: true,
                     nonce,
-                    hash,
+                    hash: block.hash,
                     miningTime: endTime - startTime,
-                    miner: this.name
+                    miner: this.name,
+                    timestamp: block.timestamp
                 };
             }
             nonce += this.nonceStep;
@@ -61,7 +54,8 @@ class Miner {
             nonce: -1,
             hash: '',
             miningTime: Date.now() - startTime,
-            miner: this.name
+            miner: this.name,
+            timestamp: Date.now()
         };
     }
 }
@@ -82,7 +76,7 @@ function runMiningRace(miners, index, data, previousHash, difficulty) {
             if (result.success) {
                 console.log(`${miner.color}${miner.name} WINS!${'\x1b[0m'}`);
                 console.log(`   Nonce: ${result.nonce} | Hash: ${result.hash.substring(0, 15)}...`);
-                console.log(`   Time: ${result.miningTime}ms | Iterations: ${iterations + batchSize}`);
+                console.log(`   Time: ${result.miningTime}ms | Iterations: ${iterations + result.nonce / miner.nonceStep}`);
                 return { winner: miner, result };
             }
         }

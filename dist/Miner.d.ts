@@ -1,4 +1,4 @@
-import { MiningResult } from './types';
+import { MiningResult, BlockData } from './types';
 /**
  * Represents a miner competing to find the next block
  * Each miner searches a different nonce range to simulate competition
@@ -13,15 +13,15 @@ export declare class Miner {
     /**
      * Attempts to mine a block
      * Searches nonces: start, start+step, start+2*step, ...
-     * Returns when valid hash found or max iterations reached
+     * Uses Block.calculateHash() for consistent hash computation
      */
-    attemptMine(index: number, data: any, previousHash: string, difficulty: number, maxIterations?: number): MiningResult;
+    attemptMine(index: number, data: BlockData, previousHash: string, difficulty: number, maxIterations?: number): MiningResult;
 }
 /**
  * Simulates a mining race between multiple miners
  * Returns the winner and the winning block
  */
-export declare function runMiningRace(miners: Miner[], index: number, data: any, previousHash: string, difficulty: number): {
+export declare function runMiningRace(miners: Miner[], index: number, data: BlockData, previousHash: string, difficulty: number): {
     winner: Miner;
     result: MiningResult;
 };

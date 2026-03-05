@@ -15,15 +15,17 @@ export class Block {
     index: number,
     data: BlockData,
     previousHash: string = '',
-    nonce: number = 0
+    nonce: number = 0,
+    timestamp?: number,
+    hash?: string
   ) {
     this.index = index;
-    this.timestamp = Date.now();
+    this.timestamp = timestamp ?? Date.now();
     this.data = data;
     this.previousHash = previousHash;
     this.nonce = nonce;
-    // calculate initial hash
-    this.hash = this.calculateHash();
+    // Use provided hash or calculate initial hash
+    this.hash = hash ?? this.calculateHash();
   }
 
 // Calculates SHA-256 hash of all block fields

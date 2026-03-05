@@ -6,7 +6,7 @@ export declare class Block {
     previousHash: string;
     nonce: number;
     hash: string;
-    constructor(index: number, data: BlockData, previousHash?: string, nonce?: number);
+    constructor(index: number, data: BlockData, previousHash?: string, nonce?: number, timestamp?: number, hash?: string);
     calculateHash(): string;
     mineBlock(difficulty: number): number;
     hasValidHash(difficulty: number): boolean;

@@ -5,14 +5,14 @@ const crypto_1 = require("crypto");
 const Transaction_1 = require("./Transaction");
 // Block class representing a single block in the blockchain
 class Block {
-    constructor(index, data, previousHash = '', nonce = 0) {
+    constructor(index, data, previousHash = '', nonce = 0, timestamp, hash) {
         this.index = index;
-        this.timestamp = Date.now();
+        this.timestamp = timestamp ?? Date.now();
         this.data = data;
         this.previousHash = previousHash;
         this.nonce = nonce;
-        // calculate initial hash
-        this.hash = this.calculateHash();
+        // Use provided hash or calculate initial hash
+        this.hash = hash ?? this.calculateHash();
     }
     // Calculates SHA-256 hash of all block fields
     calculateHash() {

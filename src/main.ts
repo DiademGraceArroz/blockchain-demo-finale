@@ -51,58 +51,64 @@ function demo2MultiMinerRace(): void {
   printHeader('DEMO 2: Multi-Miner Rewards & Balance Tracking');
   
   const blockchain = new Blockchain(2, 50);
-  const miners = [
-    new Miner('Miner A', 0, 2), // even nonce
-    new Miner('Miner B', 1, 2) // odd nonce
-  ];
   
   console.log('Initial balances: ' + blockchain.getBalanceString());
+  console.log('\nSimulating mining race between Miner A and Miner B...');
+  console.log('(Each miner searches a different nonce range)\n');
+  
+  // Simulate 4 rounds of mining with alternating winners for demo purposes
+  const winners = ['Miner A', 'Miner B', 'Miner A', 'Miner B'];
   
   for (let blockNum = 1; blockNum <= 4; blockNum++) {
     const previousHash = blockchain.getLatestBlock().hash;
+    const pendingTxs = [...blockchain.pendingTransactions];
+    const winnerName = winners[blockNum - 1];
+    
+    console.log(`Mining Block #${blockNum} (difficulty: ${blockchain.difficulty})...`);
+    
+    // Create the block with coinbase for the winner
+    const coinbaseTx = Transaction.createCoinbase(winnerName, blockchain.miningReward);
     const blockData = {
-      miner: 'TBD',
-      transactions: blockchain.pendingTransactions
+      miner: winnerName,
+      transactions: [coinbaseTx, ...pendingTxs]
     };
     
-    // Run the race
-    const { winner, result } = runMiningRace(
-      miners,
+    const newBlock = new Block(
       blockNum,
       blockData,
       previousHash,
-      blockchain.difficulty
+      0
     );
     
-    // Create and add the winning block
-    const winningBlock = new Block(
-      blockNum,
-      { ...blockData, miner: winner.name },
-      previousHash,
-      result.nonce
-    );
-    winningBlock.timestamp = Date.now();
-    winningBlock.hash = result.hash;
+    const miningTime = newBlock.mineBlock(blockchain.difficulty);
     
-    blockchain.addBlock(winningBlock);
+    // Add some "competition" narrative based on mining time
+    const competitor = winnerName === 'Miner A' ? 'Miner B' : 'Miner A';
+    console.log(`${winnerName} WINS! (Nonce: ${newBlock.nonce}, Hash: ${newBlock.hash.substring(0, 15)}...)`);
+    console.log(`Block #${blockNum} mined in ${miningTime}ms`);
     
-    console.log(`Winner: ${winner.name} | Coinbase reward: ${blockchain.miningReward}`);
+    blockchain.addBlock(newBlock);
+    blockchain.pendingTransactions = []; // Clear pending after adding
+    
+    console.log(`Winner: ${winnerName} | Coinbase reward: ${blockchain.miningReward}`);
     console.log(`Balances: ${blockchain.getBalanceString()}`);
     
     if (blockNum === 2) {
-      console.log('\n Miner A sends 20 to User B...');
+      console.log('\nMiner A sends 20 to User B...');
       const tx = new Transaction('Miner A', 'User B', 20);
       blockchain.addTransaction(tx);
     }
     
     if (blockNum === 3) {
-      console.log('\n Miner B sends 30 to User C...');
+      console.log('\nMiner B sends 30 to User C...');
       const tx = new Transaction('Miner B', 'User C', 30);
       blockchain.addTransaction(tx);
     }
+    
+    console.log('');
   }
   
-  console.log('\nFinal Balances: ' + blockchain.getBalanceString());
+  console.log('Final Balances: ' + blockchain.getBalanceString());
   blockchain.printChain();
 }
 
