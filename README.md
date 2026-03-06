@@ -26,7 +26,7 @@ A complete end-to-end blockchain demonstration in TypeScript + Node.js, implemen
 - 🎁 **Difficulty Comparison Table**: Automated benchmarking across difficulty levels
 - 🎁 **Network Simulation**: Multi-node architecture with peer connections
 
-### Questions
+## Questions
 1. What fields are included in a block and why
    -  Blocks contain index (position), timestamp (Date.now()), data (BlockData: miner string + Transaction[]), previousHash (prior block hash), nonce (PoW solution), hash (SHA256 of all fields concatenated).
    -  Purpose: previousHash chains blocks immutably; nonce+hash prove computational work (prefix zeros = difficulty); data stores payload; index/timestamp ensure ordering.
