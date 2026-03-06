@@ -26,6 +26,13 @@ A complete end-to-end blockchain demonstration in TypeScript + Node.js, implemen
 - 🎁 **Difficulty Comparison Table**: Automated benchmarking across difficulty levels
 - 🎁 **Network Simulation**: Multi-node architecture with peer connections
 
+### Questions
+1. What fields are included in a block and why
+   -  Blockchain demo include these fields in a block object: index, timestamp, data (transactions), previousHash, nonce, and hash. Index tracks chain position; timestamp records creation; data holds payload; previousHash links to prior block for immutability; nonce solves PoW puzzle; hash is SHA256 of all fields. This structure prevents tampering—if any field changes, hash invalidates, breaking the chain
+3. Exactly what isChainValid() checks
+4. How you simulated a multi-miner race (nonce ranges / stepping)
+5. What your fork scenario is and how you resolved it
+
 ## 🚀 Quick Start
 
 ### Prerequisites
