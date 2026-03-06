@@ -28,10 +28,28 @@ A complete end-to-end blockchain demonstration in TypeScript + Node.js, implemen
 
 ### Questions
 1. What fields are included in a block and why
-   -  Blockchain demo include these fields in a block object: index, timestamp, data (transactions), previousHash, nonce, and hash. Index tracks chain position; timestamp records creation; data holds payload; previousHash links to prior block for immutability; nonce solves PoW puzzle; hash is SHA256 of all fields. This structure prevents tampering—if any field changes, hash invalidates, breaking the chain
-3. Exactly what isChainValid() checks
-4. How you simulated a multi-miner race (nonce ranges / stepping)
-5. What your fork scenario is and how you resolved it
+   -  Blocks contain index (position), timestamp (Date.now()), data (BlockData: miner string + Transaction[]), previousHash (prior block hash), nonce (PoW solution), hash (SHA256 of all fields concatenated).
+   -  Purpose: previousHash chains blocks immutably; nonce+hash prove computational work (prefix zeros = difficulty); data stores payload; index/timestamp ensure ordering.
+
+2. Exactly what isChainValid() checks
+   - Iterates blocks 1-N checking three conditions per block:
+        Hash integrity: block.hash === block.calculateHash() (recomputes SHA256 from fields)
+        Chain linking: currentBlock.previousHash === previousBlock.hash
+        Proof-of-work: block.hash.startsWith('0'.repeat(difficulty)) via hasValidHash()
+     Returns {valid: false, failedBlockIndex: i, reason: "..."} on first failure; genesis (index 0) assumed valid.
+
+3. How you simulated a multi-miner race (nonce ranges / stepping)
+   - Miner class assigns each miner unique nonceStart/nonceStep (e.g., Miner A: start=0 step=1; Miner B: start=1000 step=2).
+   - runMiningRace() pits miners vs each other in batches: each attemptMine() tests nonces in parallel-like rounds (nonceStart + i*nonceStep) until one hits target prefix, simulating hash power competition via disjoint search spaces.
+   - Demo2 alternates winners narratively; real race uses first-to-solve-wins logic.
+
+4. What your fork scenario is and how you resolved it
+   - Fork: Two valid competing blocks (#1A vs #1B) at same height sharing same previousHash (genesis)—one accepted per node via addBlock() in createForkScenario().
+   - Resolution: Node.syncWith() + replaceChain() implements longest-chain rule:
+        - Compare chain lengths
+        - Fully validate rival chain via isChainValid()
+        - If rival longer AND valid, clone/adopt entire chain (shorter fork orphaned) Demo4: Node A mines Block #2 atop #1A; Node B switches from #1B→#1A→#2.
+​
 
 ## 🚀 Quick Start
 
